@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoBot AI - Cyberpunk Station v2.5</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="cyber-chat-container">
+        
+        <header class="chat-header">
+            <button id="menu-toggle-btn" class="menu-toggle-btn">☰</button>
+            <h2>NEOBOT v2.5 // CORE</h2>
+            <div id="connection-status" class="status-indicator guest-mode">GUEST MODE</div>
+        </header>
+
+        <div class="main-layout">
+            
+            <div id="sidebar-panel" class="sidebar-panel">
+                <div class="sidebar-header">
+                    <h3>MATRIX MENU</h3>
+                    <button id="close-sidebar-btn" class="close-btn">×</button>
+                </div>
+
+                <div class="sidebar-actions">
+                    <div id="auth-section" class="auth-wrapper">
+                        <p class="section-notice">Sync conversations via Matrix ID</p>
+                        <div class="auth-tabs">
+                            <button id="tab-login" class="tab-btn active">Sign In</button>
+                            <button id="tab-signup" class="tab-btn">Sign Up</button>
+                        </div>
+                        <div class="auth-form">
+                            <input type="email" id="auth-email" placeholder="Matrix Email ID">
+                            <input type="password" id="auth-pass" placeholder="Secure Password">
+                            <button id="auth-submit-btn" class="submit-btn">ACCESS CORE</button>
+                        </div>
+                    </div>
+                    
+                    <div id="profile-section" class="profile-section hidden">
+                        <div class="user-profile">
+                            <div class="avatar">⚡</div>
+                            <div class="user-info">
+                                <span id="username-display" class="username">User // Online</span>
+                            </div>
+                        </div>
+                        <button id="logout-btn" class="logout-btn">DISCONNECT</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+                <div class="recent-title">SECURE HISTORY LOGS</div>
+
+                <div id="history-box" class="sidebar-content">
+                    <p class="empty-history-text">Login to sync cloud logs...</p>
+                </div>
+            </div>
+
+            <div class="chat-viewport">
+                <div id="chat-box" class="chat-box">
+                    <div class="message bot-msg">
+                        <div class="msg-bubble">
+                            <span class="bot-tag">[NEOBOT]:</span> SYSTEM ONLINE. Main NeoBot hoon. Aap guest mode mein bina login kiye turant baat kar sakte hain. Agar aapko apni chat history save rakhni hai, toh side menu kholkar Sign In karein! ⚡
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-wrapper">
+                    <div class="chat-input-tray">
+                        <textarea id="user-input" placeholder="Type a message into the matrix..." rows="1"></textarea>
+                        <button id="send-btn" class="send-btn">SEND</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
