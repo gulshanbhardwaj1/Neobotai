@@ -3,85 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoBot-AI.com</title>
+    <title>NeoBot — Chat</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="cyber-chat-container">
-        
+    <div class="cyber-chat-container" role="application" aria-label="NeoBot Chat Application">
+
         <header class="chat-header">
-            <button id="menu-toggle-btn" class="menu-toggle-btn">☰</button>
-            <h2>Neobot</h2>
-            <div id="connection-status" class="status-indicator guest-mode">GUEST MODE</div>
+            <button id="menu-toggle-btn" class="menu-toggle-btn" aria-label="Open menu">☰</button>
+            <h1 style="font-size:1.1rem; margin:0;">NeoBot</h1>
+            <div id="connection-status" class="status-indicator guest-mode" aria-live="polite">GUEST MODE</div>
         </header>
 
         <div class="main-layout">
-            
-            <div id="sidebar-panel" class="sidebar-panel">
+
+            <!-- Sidebar / Menu -->
+            <aside id="sidebar-panel" class="sidebar-panel" aria-hidden="true" aria-label="Menu and account">
                 <div class="sidebar-header">
-                    <h3>MENU</h3>
-                    <button id="close-sidebar-btn" class="close-btn">×</button>
+                    <h2 style="margin:0; font-size:0.95rem;">MENU</h2>
+                    <button id="close-sidebar-btn" class="close-btn" aria-label="Close menu">×</button>
                 </div>
 
                 <div class="sidebar-actions">
-                    <div id="auth-section" class="auth-wrapper">
-                        <p class="section-notice">Sync conversations via Matrix ID</p>
-                        <div class="auth-tabs">
-                            <button id="tab-login" class="tab-btn active">Sign In</button>
-                            <button id="tab-signup" class="tab-btn">Sign Up</button>
+                    <section id="auth-section" class="auth-wrapper" aria-labelledby="auth-heading">
+                        <p id="auth-heading" class="section-notice">Sync conversations via Matrix ID</p>
+                        <div class="auth-tabs" role="tablist">
+                            <button id="tab-login" class="tab-btn active" role="tab" aria-selected="true">Sign In</button>
+                            <button id="tab-signup" class="tab-btn" role="tab" aria-selected="false">Sign Up</button>
                         </div>
-                        <div class="auth-form">
-                            <input type="email" id="auth-email" placeholder="Matrix Email ID">
-                            <input type="password" id="auth-pass" placeholder="Secure Password">
-                            <button id="auth-submit-btn" class="submit-btn">ACCESS CORE</button>
-                        </div>
-                    </div>
-                    
-                    <div id="profile-section" class="profile-section hidden">
+                        <form class="auth-form" onsubmit="event.preventDefault(); executionAuthPipeline();">
+                            <label for="auth-email" class="hidden">Email</label>
+                            <input type="email" id="auth-email" placeholder="Matrix Email ID" required>
+                            <label for="auth-pass" class="hidden">Password</label>
+                            <input type="password" id="auth-pass" placeholder="Secure Password" required>
+                            <button id="auth-submit-btn" type="submit" class="submit-btn">ACCESS CORE</button>
+                        </form>
+                    </section>
+
+                    <section id="profile-section" class="profile-section hidden" aria-hidden="true">
                         <div class="user-profile">
-                            <div class="avatar">⚡</div>
+                            <div class="avatar" aria-hidden="true">⚡</div>
                             <div class="user-info">
                                 <span id="username-display" class="username">User // Online</span>
                             </div>
                         </div>
                         <button id="logout-btn" class="logout-btn">DISCONNECT</button>
-                    </div>
+                    </section>
                 </div>
 
                 <div class="sidebar-divider"></div>
                 <div class="recent-title">SECURE HISTORY LOGS</div>
 
-                <div id="history-box" class="sidebar-content">
+                <div id="history-box" class="sidebar-content" tabindex="0">
                     <p class="empty-history-text">Login to sync cloud logs...</p>
                 </div>
-            </div>
+            </aside>
 
-            <div class="chat-viewport">
-                <div id="chat-box" class="chat-box">
+            <!-- Chat viewport -->
+            <main class="chat-viewport" role="main">
+                <div id="chat-box" class="chat-box" role="log" aria-live="polite">
+                    <!-- System welcome message -->
                     <div class="message bot-msg">
                         <div class="msg-bubble">
-                            <span class="bot-tag">[NEOBOT]:</span> SYSTEM ONLINE. Main NeoBot hoon. Aap guest mode mein bina login kiye turant baat kar sakte hain. Agar aapko apni chat history save rakhni hai, toh side menu kholkar Sign In karein! ⚡
+                            <span class="bot-tag">[NEOBOT]:</span>
+                            SYSTEM ONLINE. Main NeoBot hoon. Aap guest mode mein bina login kiye turant baat kar sakte hain.
                         </div>
                     </div>
                 </div>
 
                 <div class="chat-input-wrapper">
-                    <div class="chat-input-tray">
-                        <textarea id="user-input" placeholder="Type a message into the matrix..." rows="1"></textarea>
-                        <button id="send-btn" class="send-btn">SEND</button>
-                    </div>
+                    <form id="chat-form" class="chat-input-tray" onsubmit="event.preventDefault(); transmitUserDialogue();" aria-label="Send message">
+                        <textarea id="user-input" placeholder="Type a message to NeoBot..." rows="1" aria-label="Message input" required></textarea>
+                        <button id="send-btn" type="submit" class="send-btn" aria-label="Send message">SEND</button>
+                    </form>
                 </div>
-            </div>
+            </main>
 
         </div>
+
+        <div id="sidebar-overlay" class="sidebar-overlay" hidden></div>
+
     </div>
 
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
+    <!-- Scripts: core app scripts loaded after DOM -->
     <script src="script.js"></script>
+    <script type="module" src="auth-system.js"></script>
 
-    <script type="module" src="Systems/auth-system.js"></script>
-    
 </body>
 </html>
