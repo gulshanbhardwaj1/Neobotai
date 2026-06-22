@@ -1,28 +1,31 @@
 // --- INTERFACE STRUCTURAL DOM MAPPING ---
-const menuToggleBtn = document.getElementById('menu-toggle-btn');
-const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-const sidebarPanel = document.getElementById('sidebar-panel');
-const sidebarOverlay = document.getElementById('sidebar-overlay');
-const chatBox = document.getElementById('chat-box');
-const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
-const historyContainer = document.getElementById('history-box');
 
-const API_CHAT_BASE = 'http://localhost:3000/api';
+// Use relative API base so production over HTTPS will work with a proxied backend
+const API_CHAT_BASE = '/api';
+
+let menuToggleBtn, closeSidebarBtn, sidebarPanel, sidebarOverlay, chatBox, userInput, sendBtn, historyContainer;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Synchronize current data structures on startup
-    if (window.evaluateUserSession) {
-        window.evaluateUserSession();
-    }
-    
-    // Auto-grow configuration logic for chat text terminal
+    // Query DOM elements after they exist
+    menuToggleBtn = document.getElementById('menu-toggle-btn');
+    closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    sidebarPanel = document.getElementById('sidebar-panel');
+    sidebarOverlay = document.getElementById('sidebar-overlay');
+    chatBox = document.getElementById('chat-box');
+    userInput = document.getElementById('user-input');
+    sendBtn = document.getElementById('send-btn');
+    historyContainer = document.getElementById('history-box');
+
+    // Initialize auth system if present
+    if (window.evaluateUserSession) window.evaluateUserSession();
+
+    // Auto-grow textarea
     userInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
 
-    // Control triggers setup
+    // Submit handlers
     sendBtn.addEventListener('click', transmitUserDialogue);
     userInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -30,23 +33,37 @@ document.addEventListener('DOMContentLoaded', () => {
             transmitUserDialogue();
         }
     });
+
+    // Sidebar toggles
+    if (menuToggleBtn) menuToggleBtn.addEventListener('click', openSidebarLayout);
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebarLayout);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebarLayout);
+
+    // Focus input on load for quick chat
+    if (userInput) userInput.focus();
 });
 
-// --- SIDE PANEL SLIDER ANIMATION INTERFACES ---
-menuToggleBtn.addEventListener('click', () => {
+function openSidebarLayout() {
+    if (!sidebarPanel || !sidebarOverlay) return;
     sidebarPanel.classList.add('open');
-    sidebarOverlay.classList.add('active');
-});
+    sidebarPanel.setAttribute('aria-hidden', 'false');
+    sidebarOverlay.hidden = false;
+}
 
-const closeSidebarLayout = () => {
+function closeSidebarLayout() {
+    if (!sidebarPanel || !sidebarOverlay) return;
     sidebarPanel.classList.remove('open');
-    sidebarOverlay.classList.remove('active');
-};
-closeSidebarBtn.addEventListener('click', closeSidebarLayout);
-sidebarOverlay.addEventListener('click', closeSidebarLayout);
+    sidebarPanel.setAttribute('aria-hidden', 'true');
+    sidebarOverlay.hidden = true;
+}
+
+// Expose for other modules
+window.openSidebarLayout = openSidebarLayout;
+window.closeSidebarLayout = closeSidebarLayout;
 
 // --- PIPELINE STREAM TRANSMISSION CONTROLLER ---
 async function transmitUserDialogue() {
+    if (!userInput) return;
     const rawPrompt = userInput.value.trim();
     if (!rawPrompt) return;
 
@@ -59,41 +76,44 @@ async function transmitUserDialogue() {
     // Print client dialogue bubble token
     appendChatBubbleToken(rawPrompt, 'user-msg');
 
+    // Render loading token
+    const loadingTokenId = appendChatBubbleToken('[COMPILING MATRIX DATA STREAMS]...', 'bot-msg');
+
     try {
-        // Render artificial intelligence parsing state trace
-        const loadingTokenId = appendChatBubbleToken('[COMPILING MATRIX DATA STREAMS]...', 'bot-msg');
-        
         const response = await fetch(`${API_CHAT_BASE}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: rawPrompt, 
-                uid: sessionUID || "GUEST_USER_SESSION" // Strict Pro Logic: Login na ho to generic routing track
-            })
+            body: JSON.stringify({ message: rawPrompt, uid: sessionUID || 'GUEST_USER_SESSION' })
         });
-        
-        const outputData = await response.json();
-        
-        // Clear calculation loader row
-        document.getElementById(loadingTokenId).remove();
 
-        if (outputData.reply) {
+        if (!response.ok) {
+            throw new Error(`Server error ${response.status}`);
+        }
+
+        const outputData = await response.json();
+
+        // Remove loading token if still present
+        const loader = document.getElementById(loadingTokenId);
+        if (loader) loader.remove();
+
+        if (outputData && outputData.reply) {
             appendChatBubbleToken(outputData.reply, 'bot-msg', true);
-            
-            // Sync log tracks down history pane if authenticated session exists
-            if (sessionUID) {
-                fetchUserHistoryLogs();
+            if (sessionUID && window.fetchUserHistoryLogs) {
+                window.fetchUserHistoryLogs();
             }
         } else {
             appendChatBubbleToken('⚠️ Connection drop: Core returned null configurations.', 'bot-msg', true);
         }
     } catch (error) {
-        console.error("AI Communication Failure:", error);
-        appendChatBubbleToken('❌ Connection dropped: loopback host system offline.', 'bot-msg', true);
+        console.error('AI Communication Failure:', error);
+        // ensure loader removed
+        const loader = document.getElementById(loadingTokenId);
+        if (loader) loader.remove();
+        appendChatBubbleToken('❌ Connection dropped: backend unavailable.', 'bot-msg', true);
     }
 }
 
-// DOM Injection processing machine for chat nodes
+// DOM Injection processing machine for chat nodes (XSS-safe)
 function appendChatBubbleToken(content, alignmentStyleClass, isBotAgent = false) {
     const trackingId = 'token_' + Date.now() + Math.random().toString(36).substr(2, 4);
     const wrapperRow = document.createElement('div');
@@ -102,47 +122,56 @@ function appendChatBubbleToken(content, alignmentStyleClass, isBotAgent = false)
 
     const contentBox = document.createElement('div');
     contentBox.className = 'msg-bubble';
-    
+
     if (isBotAgent) {
-        contentBox.innerHTML = `<span class="bot-tag">[NEOBOT]:</span> ${content}`;
+        const tag = document.createElement('span');
+        tag.className = 'bot-tag';
+        tag.textContent = '[NEOBOT]:';
+        contentBox.appendChild(tag);
+        // Add a space separator
+        contentBox.appendChild(document.createTextNode(' ' + String(content)));
     } else {
-        contentBox.innerText = content;
+        // user content as plain text
+        contentBox.textContent = String(content);
     }
 
     wrapperRow.appendChild(contentBox);
-    chatBox.appendChild(wrapperRow);
-    
-    // Smooth scrolling snap lock active
-    chatBox.scrollTop = chatBox.scrollHeight;
+    if (chatBox) chatBox.appendChild(wrapperRow);
+
+    // Smooth scroll to bottom
+    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
     return trackingId;
 }
 
 // --- CLOUD TIMELINE LOG FETCH MECHANISM ---
 async function fetchUserHistoryLogs() {
     const sessionUID = localStorage.getItem('neo_uid');
-    if (!sessionUID) return;
+    if (!sessionUID || !historyContainer) return;
 
     try {
         const response = await fetch(`${API_CHAT_BASE}/history?uid=${sessionUID}`);
+        if (!response.ok) {
+            throw new Error(`History fetch failed ${response.status}`);
+        }
         const data = await response.json();
-        
+
         if (data.chats && data.chats.length > 0) {
             historyContainer.innerHTML = '';
             data.chats.forEach(logRow => {
                 const legacyElement = document.createElement('div');
                 legacyElement.className = 'history-item';
-                legacyElement.innerText = logRow.user_message;
+                legacyElement.textContent = logRow.user_message;
                 legacyElement.title = logRow.user_message;
                 historyContainer.appendChild(legacyElement);
             });
         } else {
             historyContainer.innerHTML = `<p class="empty-history-text">No timeline history recorded.</p>`;
         }
-    } catch(err) {
+    } catch (err) {
         historyContainer.innerHTML = `<p class="empty-history-text" style="color: #ff0055;">Log synchronization dropped.</p>`;
+        console.error('History sync error', err);
     }
 }
 
 // Global hook allocations for multi-file interconnectivity
-window.closeSidebarLayout = closeSidebarLayout;
 window.fetchUserHistoryLogs = fetchUserHistoryLogs;
