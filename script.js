@@ -2,7 +2,7 @@
    ⚠️ PASTE YOUR GEMINI API KEY HERE ⚠️
    Get one for free at: https://aistudio.google.com/app/apikey
 ========================================================== */
-const GEMINI_API_KEY = "YOUR_API_KEY_HERE";
+const GEMINI_API_KEY = "AQ.Ab8RN6JFO-MGA9gUJWFA7bW-D4AI1TtImwLDdbt59DejgQKe8g";
 
 /* Gemini endpoint (v1beta, gemini-pro model) */
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
