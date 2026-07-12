@@ -18,7 +18,7 @@ const firebaseConfig = {
   measurementId: "G-7T6QL1M5G0"
 };
 
-const GEMINI_API_KEY = "AQ.Ab8RN6JFO-MGA9gUJWFA7bW-D4AI1TtImwLDdbt59DejgQKe8g";
+const GEMINI_API_KEY = "AQ.Ab8RN6Lu3qNKD_An4QOelf4uGUy-Sp3RUtzFkbguT474i5iyYw";
 const GEMINI_MODEL = "gemini-1.5-flash";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
