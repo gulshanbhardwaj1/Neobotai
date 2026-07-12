@@ -8,16 +8,17 @@
    0. CONFIG — replace with your real keys
    -------------------------------------------------------------------------- */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyCmzxEqJQLmFBbcXENyPYRA6C-fRVrBlTY",
+  authDomain: "neobot-ai-3bb16.firebaseapp.com",
+  databaseURL: "https://neobot-ai-3bb16-default-rtdb.firebaseio.com",
+  projectId: "neobot-ai-3bb16",
+  storageBucket: "neobot-ai-3bb16.firebasestorage.app",
+  messagingSenderId: "542031139726",
+  appId: "1:542031139726:web:6e180fe1693fa282d1ce79",
+  measurementId: "G-7T6QL1M5G0"
 };
 
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
+const GEMINI_API_KEY = "AQ.Ab8RN6JFO-MGA9gUJWFA7bW-D4AI1TtImwLDdbt59DejgQKe8g";
 const GEMINI_MODEL = "gemini-1.5-flash";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
